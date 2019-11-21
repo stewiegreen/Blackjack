@@ -5,9 +5,21 @@ class Player:
         self.name = name
         self.hand = hand
         self.value = value
+       
         self.hand = []
+       
         value = 0
 
+    def is_bust(self):
+        if self.card_value() > 21:
+            self.done = True
+
+    def is_done(self):
+        return self.done
+    
+    def get_name(self):
+        return self.name
+    
     def card_value(self):
         values=[]
         for card in self.hand:
@@ -42,12 +54,16 @@ class Dealer(Player):
         super().__init__(name)
         self.deck = []
     
+    
     def cards(self, n):
         suites=["Clubs","Diamonds","Spades", "Hearts"]
         numbers=[2,3,4,5,6,7,8,9,10] + ["Jack","Queen","King","Ace"]
         self.deck = [[number] + [suite] for number in numbers for suite in suites]
         return (self.deck * n)
     
+    def dealer_done(self):
+        return self.done
+
     def shuffle_deck(self):
         random.shuffle(self.deck)
     
@@ -56,19 +72,18 @@ class Dealer(Player):
 
     def hit_or_stay(self, player, dealer):
         if player.card_value() > 21:
+            
             print("Bust!  Sorry, you lose")
-        hit_stay = input("{}, Hit or Stay (h/s):".format(player.name))
+            pass
+        hit_stay = input("{}, Hit or Stay (h/s):".format(player.get_name()))
         if hit_stay == 's':
-            if dealer.card_value() > player.card_value() and dealer.card_value() <= 21:
-                print("Dealer wins")
-            if dealer.card_value() < player.card_value() and player.card_value() <= 21:
-                print("Congrats {}, you win!".format(player.name))
-            if dealer.card_value() == player.card_value():
-                print("Draw")
+            
+            pass
         
         if hit_stay == 'h':
             dealer.deal_card(player)
             player.show_hand()
+            pass
     
     def dealer_turn(self, dealer):
         if dealer.card_value() <= 17:
@@ -76,6 +91,7 @@ class Dealer(Player):
             dealer.show_hand()
         if dealer.card_value() > 17:
             print("Dealer Stays")
+            pass
     
 
 
@@ -110,12 +126,32 @@ def main():
 
     dealer.show_hand()
 
-    while True:
+    print(dealer.card_value())
+    while dealer.card_value() <= 21:
         for person in persons:
-            dealer.hit_or_stay(person, dealer)
+            if person.card_value() < 21:
+                dealer.hit_or_stay(person, dealer)
+                print(person.card_value())
         
         dealer.dealer_turn(dealer)
+    
+    for person in persons:
+        if dealer.card_value() > 21 and person.card_value() <= 21:
+            print("Dealer busts!  " + person.name + " wins!")
+        
+        if person.card_value() <= 21 and person.card_value() > dealer.card_value():
+            print(person.name + " wins!")
+        
+        if dealer.card_value() == person.card_value():
+            print("draw")
 
+        else:
+            print(person.name + ", you lose.")
 
         
 main()
+
+#def isdone(): function that sets isdone as True when a player stays or isbust 
+# 
+#def isbust(): looking at the deck of the most recent player and determines if they're bust - activates isdone()
+#  
