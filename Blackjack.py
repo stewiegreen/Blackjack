@@ -5,7 +5,8 @@ class Player:
         self.name = name
         self.hand = hand
         self.value = value
-       
+        self.done == False
+        self.bust == False 
         self.hand = []
        
         value = 0
@@ -13,6 +14,9 @@ class Player:
     def is_bust(self):
         if self.card_value() > 21:
             self.done = True
+
+    def player_stay(self):
+        self.done = True
 
     def is_done(self):
         return self.done
@@ -77,7 +81,7 @@ class Dealer(Player):
             pass
         hit_stay = input("{}, Hit or Stay (h/s):".format(player.get_name()))
         if hit_stay == 's':
-            
+            player.player_stay()
             pass
         
         if hit_stay == 'h':
@@ -89,8 +93,12 @@ class Dealer(Player):
         if dealer.card_value() <= 17:
             dealer.deal_card(dealer)
             dealer.show_hand()
-        if dealer.card_value() > 17:
+        if dealer.card_value() > 17 and dealer.card_value() <= 21:
             print("Dealer Stays")
+            self.done = True
+            pass
+        if dealer.card_value() > 21:
+            self.done = True
             pass
     
 
@@ -127,11 +135,16 @@ def main():
     dealer.show_hand()
 
     print(dealer.card_value())
-    while dealer.card_value() <= 21:
-        for person in persons:
+    while dealer.done == False:
+        for person in persons: 
+            if person.done == True:
+                print(person.name + " has stayed, next player.")
+                continue
             if person.card_value() < 21:
                 dealer.hit_or_stay(person, dealer)
                 print(person.card_value())
+            if person.card_value() > 21:
+                person.is_bust()
         
         dealer.dealer_turn(dealer)
     
@@ -155,3 +168,7 @@ main()
 # 
 #def isbust(): looking at the deck of the most recent player and determines if they're bust - activates isdone()
 #  
+
+#human: bust and done
+
+#dealer: dust and done
