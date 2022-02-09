@@ -1,174 +1,169 @@
 import random
 
-class Player:
-    def __init__(self, name, hand = None, value = 0):
-        self.name = name
-        self.hand = hand
-        self.value = value
-        self.done == False
-        self.bust == False 
-        self.hand = []
-       
-        value = 0
+# making a deck of cards
+number = [2, 3, 4, 5, 6, 7, 8, 9, 10, "A", "J", "Q", "K"]
+suites = [u"\u2663", u"\u2660", u"\u2666", u"\u2665"]
+deck = [[x, y] for x in number for y in suites]
 
-    def is_bust(self):
-        if self.card_value() > 21:
-            self.done = True
+# deck of cards as a class
 
-    def player_stay(self):
-        self.done = True
 
-    def is_done(self):
-        return self.done
-    
-    def get_name(self):
-        return self.name
-    
-    def card_value(self):
-        values=[]
-        for card in self.hand:
-            if card[0] == "King" or card[0] == "Queen" or card[0] == "Jack":
-                values.append(10)
-            elif card[0] == "Ace":
-                values.append(11)
-            else:
-                values.append(card[0])
-                
-        if sum(values) > 21:
-            for card in self.hand:
-                if card[0] == 'Ace':
-                  values.append(-10)
-        
-        return (sum(values))
-    
+class Deck:
 
-    def hit(self, card):
-        self.hand.append(card)
+    def __init__(self, cards):
+        self.cards = cards
 
-    def show_hand(self):
-        print("{0}'s cards are: \n".format(self.name))
-        for card in self.hand:
-            print(str(card[0]) + " of " + str(card[1]) + "\n")
-    
-    def num_cards(self):
-        return len(self.hand)
-    
-class Dealer(Player):
-    def __init__(self, name, hand = None, value = 0):
-        super().__init__(name)
-        self.deck = []
-    
-    
-    def cards(self, n):
-        suites=["Clubs","Diamonds","Spades", "Hearts"]
-        numbers=[2,3,4,5,6,7,8,9,10] + ["Jack","Queen","King","Ace"]
-        self.deck = [[number] + [suite] for number in numbers for suite in suites]
-        return (self.deck * n)
-    
-    def dealer_done(self):
-        return self.done
+    def __repr__(self):
+        return str(self.cards)
+
+    def deal_card(self):
+        pick = self.cards.pop()
+        return pick
 
     def shuffle_deck(self):
-        random.shuffle(self.deck)
-    
-    def deal_card(self, Player):
-        Player.hit(self.deck.pop())
+        random.shuffle(self.cards)
 
-    def hit_or_stay(self, player, dealer):
-        if player.card_value() > 21:
-            
-            print("Bust!  Sorry, you lose")
+
+class Player:
+    def __init__(self, name, money=0):
+        self.hand = []
+        self.money = money
+        self.name = name
+        self.stay = False
+
+    def hit(self, deck):
+        self.hand.append(deck.deal_card())
+        print(f"{self.name}'s hand is: " + str(self.hand))
+        print("Count: " + str(self.calculate_hand()) + "\n")
+
+    def staying(self):
+        self.stay = True
+
+    def calculate_hand(self):
+        total = 0
+        for card in self.hand:
+            if card[0] == 'J':
+                total += 10
+            elif card[0] == 'Q':
+                total += 10
+            elif card[0] == 'K':
+                total += 10
+            elif card[0] == 'A':
+                total += 11
+            else:
+                total += card[0]
+
+        return total
+
+    def show_hand(self):
+        for card in self.hand:
+            return str(card[0]) + " of " + str(card[1])
+
+
+class Dealer(Player):
+    def __init__(self, name, money=0):
+        super().__init__(name)
+        self.hand = []
+        self.is_there_a_winner = False
+
+    def deal_cards(self, player, deck):
+        player.hand.append(deck.deal_card())
+        player.hand.append(deck.deal_card())
+        self.hand.append(deck.deal_card())
+        self.hand.append(deck.deal_card())
+
+    def check_for_win(self, player, dealer):
+        if int(player.calculate_hand()) > 21:
+            print("You Lose")
+            self.is_there_a_winner = True
             pass
-        hit_stay = input("{}, Hit or Stay (h/s):".format(player.get_name()))
-        if hit_stay == 's':
-            player.player_stay()
+
+        elif int(dealer.calculate_hand()) > 21:
+            print("You win")
+            self.is_there_a_winner = True
             pass
-        
-        if hit_stay == 'h':
-            dealer.deal_card(player)
-            player.show_hand()
+
+        elif int(dealer.calculate_hand()) == 21:
+            print('You Lose')
+            self.is_there_a_winner = True
             pass
-    
-    def dealer_turn(self, dealer):
-        if dealer.card_value() <= 17:
-            dealer.deal_card(dealer)
-            dealer.show_hand()
-        if dealer.card_value() > 17 and dealer.card_value() <= 21:
-            print("Dealer Stays")
-            self.done = True
+
+        elif int(player.calculate_hand()) == 21:
+            print("You Win")
+            self.is_there_a_winner = True
             pass
-        if dealer.card_value() > 21:
-            self.done = True
+
+        elif int(player.calculate_hand()) > int(dealer.calculate_hand()):
+            print("You Win")
+            self.is_there_a_winner = True
             pass
-    
 
+        elif int(dealer.calculate_hand()) > int(player.calculate_hand()):
+            print("You Lose")
+            self.is_there_a_winner = True
+            pass
 
-def main():
-    persons = []
-    dealer = Dealer("dealer")
-    
-    num_players = input("Welcome to Blackjack! \n How many will be playing (upto 2)?: ")
-    if num_players == '1' or num_players == '2':
-        for i in range(int(num_players)):
-            person = input("Enter your name: ")
-            person = Player(person)
-            persons.append(person)
-    else:
-        print("sorry, that's not a valid answer")
-        main()
-    
-    dealer.cards(4)
+    def check_for_lose(self, player):
+        if int(player.calculate_hand()) > 21:
+            print("You Lose")
+            self.is_there_a_winner = True
 
-    dealer.shuffle_deck()
-    
-    for person in persons:
-        dealer.deal_card(person)
-        
-    dealer.deal_card(dealer)
-
-    for person in persons:
-        dealer.deal_card(person)
-        person.show_hand()
-
-    dealer.deal_card(dealer)
-
-    dealer.show_hand()
-
-    print(dealer.card_value())
-    while dealer.done == False:
-        for person in persons: 
-            if person.done == True:
-                print(person.name + " has stayed, next player.")
-                continue
-            if person.card_value() < 21:
-                dealer.hit_or_stay(person, dealer)
-                print(person.card_value())
-            if person.card_value() > 21:
-                person.is_bust()
-        
-        dealer.dealer_turn(dealer)
-    
-    for person in persons:
-        if dealer.card_value() > 21 and person.card_value() <= 21:
-            print("Dealer busts!  " + person.name + " wins!")
-        
-        if person.card_value() <= 21 and person.card_value() > dealer.card_value():
-            print(person.name + " wins!")
-        
-        if dealer.card_value() == person.card_value():
-            print("draw")
+        elif int(player.calculate_hand()) == 21:
+            print("You Win")
+            self.is_there_a_winner = True
 
         else:
-            print(person.name + ", you lose.")
+            pass
 
-        
-main()
+    def new_hand(self, player, dealer, deck):
+        player.hand = []
+        dealer.hand = []
+        begin_game()
 
-#def isdone(): function that sets isdone as True when a player stays or isbust 
-# 
-#def isbust(): looking at the deck of the most recent player and determines if they're bust - activates isdone()
-#  
 
-#human: bust and done
+def begin_game():
+    dealer1.deal_cards(player1, deck1)
+    print(f"{name}'s hand is: " + str(player1.hand))
+    print("Count: " + str(player1.calculate_hand()) + "\n")
 
-#dealer: dust and done
+    print("\nThe DEALER's hand is: " + str(dealer1.hand))
+    print("Count: " + str(dealer1.calculate_hand()) + "\n")
+
+
+dealer1 = Dealer("Dealer")
+deck1 = Deck(deck)
+deck1.shuffle_deck()
+print("\nWelcome to Blackjack!\n")
+name = input("Please input your name: ")
+player1 = Player(name, 100)
+print(f"\n Welcome {name}!  You will have $100 to begin with.\n")
+
+begin_game()
+while dealer1.is_there_a_winner == False:
+    if player1.stay == False and dealer1.stay == False:
+        hit_stay = input("'hit' or 'stay'?: ")
+        if hit_stay == "stay":
+            player1.stay = True
+        elif hit_stay == "hit":
+            player1.hit(deck1)
+            dealer1.check_for_lose(player1)
+            if dealer1.is_there_a_winner == True:
+                break
+        if dealer1.calculate_hand() < 16:
+            dealer1.hit(deck1)
+            dealer1.check_for_lose(dealer1)
+        elif dealer1.calculate_hand() == 21:
+            dealer1.stay == True
+        else:
+            pass
+
+    elif player1.stay == True or dealer1.stay == False:
+        if dealer1.calculate_hand() < 16:
+            dealer1.hit(deck1)
+            dealer1.check_for_lose(dealer1)
+        if dealer1.calculate_hand() >= 16:
+            dealer1.stay == True
+            dealer1.check_for_win(player1, dealer1)
+
+    elif player1.stay == True and dealer1.stay == True:
+        dealer1.checker_for_win(player1, dealer1)
