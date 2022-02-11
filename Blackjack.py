@@ -30,15 +30,11 @@ class Player:
         self.money = money
         self.name = name
         self.stay = False
-        self.playing = True
 
     def hit(self, deck):
         self.hand.append(deck.deal_card())
         print(f"{self.name}'s hand is: " + str(self.hand))
         print("Count: " + str(self.calculate_hand()) + "\n")
-
-    def staying(self):
-        self.stay = True
 
     def calculate_hand(self):
         total = 0
@@ -133,15 +129,6 @@ class Dealer(Player):
             pass
 
 
-# setting up a game
-dealer1 = Dealer("Dealer")
-deck1 = Deck(deck)
-deck1.shuffle_deck()
-name = input("Please input your name: ")
-player = Player(name, 100)
-print("`~*- BLACKJACK -*~`\n")
-print(f"\n Welcome {name}!\n")
-
 # starts a game and makes sure all settings are back to default
 
 
@@ -159,41 +146,57 @@ def begin_game():
     print("Count: " + str(dealer1.calculate_hand()) + "\n")
 
 
-begin_game()
+# game mechanics start here
+
 
 # players turn
-while dealer1.is_there_a_winner == False:
-    if player.stay == False:
-        hit_stay = input("'hit' or 'stay'?: ")
-        if hit_stay == "stay":
-            player.stay = True
-        elif hit_stay == "hit":
-            player.hit(deck1)
-            dealer1.check_for_lose(player)
-            if dealer1.is_there_a_winner == True:
-                dealer1.new_game()
+def game_mechanics():
+    while dealer1.is_there_a_winner == False:
+        if player.stay == True and dealer1.stay == True:
+            dealer1.check_for_win(player, dealer1)
+            dealer1.new_game()
+
+        if player.stay == False:
+            hit_stay = input("'hit' or 'stay'?: ")
+            if hit_stay == "stay":
+                player.stay = True
+            elif hit_stay == "hit":
+                player.hit(deck1)
+                dealer1.check_for_lose(player)
+                if dealer1.is_there_a_winner == True:
+                    dealer1.new_game()
+                else:
+                    pass
             else:
                 pass
         else:
             pass
-    else:
-        pass
 
-# dealers turn
-    if dealer1.stay == False:
-        if dealer1.calculate_hand() < 16:
-            dealer1.hit(deck1)
-            dealer1.check_for_lose(dealer1)
-        elif dealer1.calculate_hand() == 21:
-            dealer1.stay = True
+    # dealers turn
+        if dealer1.stay == False:
+            if dealer1.calculate_hand() <= 16:
+                dealer1.hit(deck1)
+                dealer1.check_for_lose(dealer1)
+                if dealer1.is_there_a_winner == True:
+                    dealer1.new_game()
+            else:
+                dealer1.stay = True
         else:
-            dealer1.stay = True
+            pass
 
-    if player.stay == True and dealer1.stay == True:
-        dealer1.check_for_win(player, dealer1)
-        dealer1.new_game()
-    else:
-        pass
 
 # while is_there_a_winner == True and the game can start again.
+# setting up a game
+dealer1 = Dealer("Dealer")
+deck1 = Deck(deck)
+deck1.shuffle_deck()
+name = input("Please input your name: ")
+player = Player(name, 100)
+print("`~*- BLACKJACK -*~`\n")
+print(f"\n Welcome {name}!\n")
+
+begin_game()
+
+game_mechanics()
+
 dealer1.new_game()
