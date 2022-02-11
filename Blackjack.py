@@ -60,6 +60,8 @@ class Player:
         for card in self.hand:
             return str(card[0]) + " of " + str(card[1])
 
+# Dealer is a sub-class of player - deals with checking wins, starting new games
+
 
 class Dealer(Player):
     def __init__(self, name, money=0):
@@ -131,6 +133,7 @@ class Dealer(Player):
             pass
 
 
+# setting up a game
 dealer1 = Dealer("Dealer")
 deck1 = Deck(deck)
 deck1.shuffle_deck()
@@ -138,6 +141,8 @@ name = input("Please input your name: ")
 player = Player(name, 100)
 print("`~*- BLACKJACK -*~`\n")
 print(f"\n Welcome {name}!\n")
+
+# starts a game and makes sure all settings are back to default
 
 
 def begin_game():
@@ -156,6 +161,7 @@ def begin_game():
 
 begin_game()
 
+# players turn
 while dealer1.is_there_a_winner == False:
     if player.stay == False:
         hit_stay = input("'hit' or 'stay'?: ")
@@ -173,6 +179,7 @@ while dealer1.is_there_a_winner == False:
     else:
         pass
 
+# dealers turn
     if dealer1.stay == False:
         if dealer1.calculate_hand() < 16:
             dealer1.hit(deck1)
@@ -188,4 +195,5 @@ while dealer1.is_there_a_winner == False:
     else:
         pass
 
+# while is_there_a_winner == True and the game can start again.
 dealer1.new_game()
