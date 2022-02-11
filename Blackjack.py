@@ -71,40 +71,20 @@ class Dealer(Player):
         self.hand.append(deck.deal_card())
         self.hand.append(deck.deal_card())
 
+#check for the winner
     def check_for_win(self, player, dealer):
-        if int(player.calculate_hand()) > 21:
-            print("You Lose")
-            self.is_there_a_winner = True
-            pass
-
-        elif int(dealer.calculate_hand()) > 21:
-            print("You win")
-            self.is_there_a_winner = True
-            pass
-
-        elif int(dealer.calculate_hand()) == 21:
-            print('You Lose')
-            self.is_there_a_winner = True
-            pass
-
-        elif int(player.calculate_hand()) == 21:
-            print("You Win")
-            self.is_there_a_winner = True
-            pass
-
-        elif int(player.calculate_hand()) > int(dealer.calculate_hand()):
-            print("You Win")
-            self.is_there_a_winner = True
-            pass
-
-        elif int(dealer.calculate_hand()) > int(player.calculate_hand()):
-            print("You Lose")
-            self.is_there_a_winner = True
-            pass
-
-        else:
+        if int(player.calculate_hand()) > 21 or int(
+                dealer.calculate_hand()) == 21 or int(
+                dealer.calculate_hand()) > int(player.calculate_hand()):
+            print(f"{player.name} Loses")
             self.is_there_a_winner = True
 
+        elif int(dealer.calculate_hand()) > 21 or int(
+                player.calculate_hand()) == 21 or int(
+                player.calculate_hand()) > int(dealer.calculate_hand()):
+            print(f"{player.name} wins")
+            self.is_there_a_winner = True
+#check if a hand made someone lose
     def check_for_lose(self, player):
         if int(player.calculate_hand()) > 21:
             print(f"{player.name} Loses")
