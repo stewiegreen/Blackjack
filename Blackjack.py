@@ -71,7 +71,7 @@ class Dealer(Player):
         self.hand.append(deck.deal_card())
         self.hand.append(deck.deal_card())
 
-#check for the winner
+# check for the winner
     def check_for_win(self, player, dealer):
         if int(player.calculate_hand()) > 21 or int(
                 dealer.calculate_hand()) == 21 or int(
@@ -84,7 +84,11 @@ class Dealer(Player):
                 player.calculate_hand()) > int(dealer.calculate_hand()):
             print(f"{player.name} wins")
             self.is_there_a_winner = True
-#check if a hand made someone lose
+        else:
+            print("Draw")
+            self.is_there_a_winner = True
+
+# check if a hand made someone lose
     def check_for_lose(self, player):
         if int(player.calculate_hand()) > 21:
             print(f"{player.name} Loses")
@@ -92,10 +96,6 @@ class Dealer(Player):
 
         else:
             pass
-
-        """elif int(player.calculate_hand()) == 21:
-            print(f"{player.name} Wins")
-            self.is_there_a_winner = True"""
 
     def new_hand(self, player, dealer):
         player.hand = []
